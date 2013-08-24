@@ -30,7 +30,7 @@ def getLocalIP():
         a.wait()
         out = a.communicate()
         ip = out[0].strip().split("\n")  # 所有的列表
-        if len(ip) == 0:
+        if len(ip) == 1 and ip[0] == "" or len(ip) == 0:
             return False
         ip = "完".join(ip)
     return ip
@@ -51,6 +51,7 @@ def play(voice):
         a.wait()
         if a.returncode == 0:
             break
+
 
 def speak(ip):
     for i in ip:
