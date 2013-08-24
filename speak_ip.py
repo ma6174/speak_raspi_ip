@@ -7,8 +7,8 @@ import time
 import socket
 import subprocess
 
-voice_path = os.path.join(sys.path[0],'voice')
-player = "omxplayer"
+voice_path = os.path.join(sys.path[0], 'voice')
+player = ["omxplayer", "mpg123", "mpg321", "mplayer"]
 
 
 def getLocalIP():
@@ -16,16 +16,22 @@ def getLocalIP():
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(('114.114.114.114', 0))
-        ip =  s.getsockname()[0]
+        ip = s.getsockname()[0]
     except:
         name = socket.gethostname()
         ip = socket.gethostbyname(name)
     if ip.startswith("127."):
         cmd = '''/sbin/ifconfig | grep "inet " | cut -d: -f2 | awk '{print $1}' | grep -v "^127."'''
-        a = subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE)
+        a = subprocess.Popen(
+            cmd,
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
         a.wait()
         out = a.communicate()
-        ip = out[0].strip().split("\n") # 所有的列表
+        ip = out[0].strip().split("\n")  # 所有的列表
+        if len(ip) == 0:
+            return False
         ip = "完".join(ip)
     return ip
 
@@ -35,8 +41,16 @@ def getFilePath(filename):
 
 
 def play(voice):
-    os.system("%s %s > /dev/null 2>&1" % (player, getFilePath(voice)))
-
+    for i in player:
+        cmd = "%s %s" % (i, getFilePath(voice))
+        a = subprocess.Popen(
+            cmd,
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
+        a.wait()
+        if a.returncode == 0:
+            break
 
 def speak(ip):
     for i in ip:
@@ -46,12 +60,12 @@ def speak(ip):
             play(i)
     play("完")
 
-if __name__=='__main__':
+if __name__ == '__main__':
     count = 0
     while True:
         ip = getLocalIP()
         print ip
-        if ip.startswith("127"):
+        if ip == False:
             play("正在获取网络地址")
         else:
             count += 1
