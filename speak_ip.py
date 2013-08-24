@@ -6,7 +6,7 @@ import time
 import socket
 import subprocess
 
-voice_path = "/var/speak_ip/voice"
+voice_path = os.path.join(os.path.abspath(os.curdir),'voice')
 player = "omxplayer"
 
 
