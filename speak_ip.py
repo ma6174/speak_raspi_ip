@@ -2,11 +2,12 @@
 # coding=utf-8
 
 import os
+import sys
 import time
 import socket
 import subprocess
 
-voice_path = os.path.join(os.path.abspath(os.curdir),'voice')
+voice_path = os.path.join(sys.path[0],'voice')
 player = "omxplayer"
 
 
